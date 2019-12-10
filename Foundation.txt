@@ -1,0 +1,51 @@
+Dim ValueName
+
+ValueName = "FoundationType"
+
+
+if (InStr(Lcase(Me.Field(ValueName).Value),"счет")) then
+    Me.Field(ValueName).Text = "1"
+    Exit Sub
+elseif (InStr(Lcase(Me.Field(ValueName).Value),"договор")) then
+    Me.Field(ValueName).Text = "2"
+    Exit Sub
+elseif (InStr(Lcase(Me.Field(ValueName).Value),"контракт")) then
+    Me.Field(ValueName).Text = "2"
+    Exit Sub
+elseif (Lcase(Me.Field(ValueName).Value) = "") then
+    Me.Field(ValueName).Text = "0"
+    Exit Sub
+elseif (Lcase(Me.Field(ValueName).Value) <> "1") and (Lcase(Me.Field(ValueName).Value) <> "2") and (Lcase(Me.Field(ValueName).Value) <> "0") then
+    Me.Field(ValueName).Text = "3"
+end if  
+
+==========================
+
+Dim vFieldVal, vFieldtmp, i
+
+vFieldtmp = me.Field("FoundationNumber").Text
+
+if Len(vFieldtmp) = 0 then
+    exit sub
+end if
+
+vFieldVal = me.Field("FoundationName").Text
+
+for i = Len(vFieldVal) to 1 Step -1
+    if  instr( 1, "№", Mid( vFieldVal, i , 1 ) ) <> 0 then 
+        Exit for    
+    End if
+next  
+    
+if i = 0 then
+    Exit Sub               
+else
+    me.Field("FoundationName").Text = Left (vFieldVal, i) & me.Field("FoundationNumber").Text
+end if
+
+if Len(me.Field("FoundationDate").Text) > 0 then
+    me.Field("FoundationName").Text = me.Field("FoundationName").Text & " от " & me.Field("FoundationDate").Text
+end if
+
+
+

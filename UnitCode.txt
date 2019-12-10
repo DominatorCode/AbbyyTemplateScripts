@@ -1,0 +1,58 @@
+Dim totQty
+
+totQty = me.Symbols.Count
+
+if (totQty > 0) then
+for i = totQty - 1 to 0 Step -1
+        if  instr( 1, "0123456789", me.Symbols(i).Symbol ) = 0 then 
+            me.Symbols.Delete(i)  
+        End if
+      next 
+end if
+
+totQty = me.Symbols.Count
+
+if (totQty > 1) then
+	if (abs(me.Symbols(totQty - 1).Rect.Left - me.Symbols(totQty - 2).Rect.Left) > 50) then
+		me.Symbols.Delete(totQty - 1)
+	end if
+end if
+
+if (me.Symbols.Count > 1) then	
+    if (abs(me.Symbols(1).Rect.Right - me.Symbols(0).Rect.Right) > 50) then
+		me.Symbols.Delete(0)
+	end if
+end if
+
+
+
+
+'================================================================
+
+dim sValue
+
+sValue = me.Field("UnitCode").Text
+
+if Len(sValue) < 3 then
+    me.Field("UnitCode").Text = ""
+end if
+
+if Len(sValue) > 3 then
+    if (Mid(sValue, 1, 1) = 1) then
+        sValue = Mid(sValue, 2, 3)
+        me.Field("UnitCode").Text = sValue
+    end if
+end if
+
+
+if Len(sValue) > 3 then
+    if Mid(sValue, Len(sValue), 1) = 1 then
+        sValue = Mid(sValue, 1, 3)
+        me.Field("UnitCode").Text = sValue
+    end if
+end if
+
+
+
+
+

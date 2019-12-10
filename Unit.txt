@@ -1,0 +1,85 @@
+Dim totQty, i
+
+totQty = me.Symbols.Count
+
+if totQty > 0 then
+
+	Set re = New RegExp
+	re.Pattern = "[а-я]"
+	re.IgnoreCase = True
+	re.Global = True
+
+	if  not re.Test(me.Symbols(totQty - 1).Symbol) and not IsNumeric(me.Symbols(totQty - 1).Symbol) then 
+			me.Symbols.Delete(totQty - 1)
+	End if	
+
+	if me.Symbols.Count > 0 then
+		if  not re.Test(me.Symbols(0).Symbol) and not IsNumeric(me.Symbols(0).Symbol) then 
+				me.Symbols.Delete(0)
+		End if
+	end if
+End if
+totQty = me.Symbols.Count
+if totQty > 3 then
+	for i = totQty - 2 to 1 step -1
+			if  not re.Test(me.Symbols(i).Symbol) and not IsNumeric(me.Symbols(i).Symbol) and me.Symbols(i).Symbol <> "." then 
+				me.Symbols.Delete(i)
+			End if
+	next
+End if
+
+totQty = me.Symbols.Count
+
+if (totQty > 1) then   
+	if (abs(me.Symbols(totQty - 1).Rect.Left - me.Symbols(totQty - 2).Rect.Left) > 50) then
+		me.Symbols.Delete(totQty - 1)
+	end if
+end if
+totQty = me.Symbols.Count
+if (totQty > 1) then  
+    if (abs(me.Symbols(1).Rect.Right - me.Symbols(0).Rect.Right) > 50) then
+		me.Symbols.Delete(0)
+	end if
+end if
+totQty = me.Symbols.Count
+if (totQty > 1) then 
+	if (me.Symbols(0).Symbol = "г") and (me.Symbols(1).Symbol = " ") then
+		me.Symbols.Delete(0)
+	end if
+end if
+
+
+
+'=====================================================================================
+Dim vFieldUnitCode, vFieldName
+
+vFieldUnitCode = "UnitCode"
+vFieldName = "Unit"
+
+
+if (Len(me.Field(vFieldUnitCode).Text) = 0) then
+    Exit Sub
+end if
+
+if me.Field(vFieldUnitCode).Value = 796 and (me.Field(vFieldName).IsSuspicious or Len(me.Field(vFieldName).Text)) = 0 then
+        me.Field(vFieldName).Text = "шт"
+elseif me.Field(vFieldUnitCode).Value = 698 then
+    me.Field(vFieldName).Text = "мест"
+elseif me.Field(vFieldUnitCode).Value = 778 then
+    me.Field(vFieldName).Text = "упак"
+elseif me.Field(vFieldUnitCode).Value = 715 then
+    me.Field(vFieldName).Text = "пар"
+elseif me.Field(vFieldUnitCode).Value = 166 then
+    me.Field(vFieldName).Text = "кг"
+elseif me.Field(vFieldUnitCode).Value = 055 then
+    me.Field(vFieldName).Text = "м2"
+end if
+
+if Len(me.Field(vFieldName).Text) = 0 or (me.Field(vFieldName).Text = "г") or me.Field(vFieldName).Text = "шт" then
+    if me.Field(vFieldUnitCode).Value = 168 then
+        me.Field(vFieldName).Text = "т"
+    end if
+end if
+
+'=========================================
+

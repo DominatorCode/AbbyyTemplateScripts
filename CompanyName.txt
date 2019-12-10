@@ -1,0 +1,56 @@
+Dim totQty, i, j
+
+totQty = me.Symbols.Count
+
+if totQty = 0  then
+ Exit Sub
+end if
+
+Dim vStringToDelete, vFieldName, vFieldVal
+
+vFieldName = "IssCompany"
+vFieldVal = me.FIELD(vFieldName).Value
+
+Dim CharToDelete, startQuotes, endQuotes, indexPunctuation
+
+vStringToDelete = "*«""'»"
+
+
+vFieldVal = me.FIELD(vFieldName).Text
+
+' удаляем переносы каретки на пробелы
+vFieldVal = Replace (vFieldVal, vbLF, " ")
+vFieldVal = Replace (vFieldVal, vbCR, " ")
+
+startQuotes = false
+endQuotes = false
+indexPunctuation = 0
+
+'c конца 
+ for j = Len (vFieldVal) to 2 Step -1
+   if  instr(1, vStringToDelete, Mid(vFieldVal, j, 1)) <> 0 then
+     endQuotes = true
+     exit for 
+   end if
+ if  instr(1, ",.)]}", Mid(vFieldVal, j, 1)) <> 0 then
+     indexPunctuation = j 
+   end if 
+next
+
+if indexPunctuation > 0 and endQuotes = false then
+ vFieldVal = Left (vFieldVal, indexPunctuation - 1)
+end if
+
+
+
+' с начала
+vFieldVal = Replace (vFieldVal, "N9", "№")
+vFieldVal = Replace (vFieldVal, "общество с ограниченной ответственностью", "ООО")
+vFieldVal = Replace (vFieldVal, "Общество с ограниченной ответственностью", "ООО")
+
+if instr(vFieldVal, "ществ") <> 0 and instr(vFieldVal, "ранич") <> 0 and instr(vFieldVal, "ветств") <> 0 then
+    vFieldVal = "ООО" +  Right(vFieldVal, Len(vFieldVal) - instr(vFieldVal, "остью") - 4)
+end if
+
+
+me.FIELD(vFieldName).Text = vFieldVal

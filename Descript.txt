@@ -1,0 +1,150 @@
+Dim totQty, i, vFieldVal
+
+totQty = me.Symbols.Count
+
+if (totQty < 2) then
+    exit sub
+end if
+
+if (me.Symbols(totQty - 1).Rect.Left - me.Symbols(totQty - 2).Rect.Left > 80) then
+    me.Symbols.Delete(totQty - 1)
+    else if (abs(me.Symbols(totQty - 1).Rect.Bottom) - abs(me.Symbols(totQty - 2).Rect.Bottom) > 7) and (me.Symbols(totQty - 1).IsSuspicious) and (me.Symbols(totQty - 2).Symbol = " ")then
+        me.Symbols.Delete(totQty - 1)
+        end if
+end if
+
+if me.Symbols(0).Symbol = "I" then
+    me.Symbols.Delete(0)
+end if
+
+me.Text = Replace (me.Text, "^", "")
+me.Text = Replace (me.Text, vbCR, "")
+me.Text = Replace (me.Text, vbLF, "^")
+
+if me.Symbols(me.Symbols.Count - 2).Symbol = "^" then 
+    me.Symbols.Delete(me.Symbols.Count - 2)
+end if
+
+totQty = me.Symbols.Count
+    
+Set re = New RegExp
+re.Pattern = "[A-Z0-9А-Я ,.{}()-:«»<>#№%&*+\/ёЁ^""]"
+re.IgnoreCase = True
+re.Global = True
+
+for i = totQty - 1 to 0 Step -1
+        if not re.Test(me.Symbols(i).Symbol) then
+            me.Symbols.Delete(i)  
+        End if
+Next
+
+' удаляем мусор в конце
+totQty = me.Symbols.Count
+Set re = New RegExp
+re.Pattern = "[A-ZА-Я0-9.%"")}>]"
+re.IgnoreCase = True
+re.Global = True
+
+for i = totQty - 1 to 1 Step -1
+    if re.Test(me.Symbols(i).Symbol) then 
+        Exit for    
+    End if
+next 
+if i > 2 then
+    me.Text = Left(me.Text, i + 1)
+end if
+
+
+
+totQty = me.Symbols.Count
+' удаляем мусор в начале
+'exit sub
+Set re = New RegExp
+re.Pattern = "[0-9A-ZА-Я]"
+re.IgnoreCase = True
+re.Global = True
+for i = 0 to  me.Symbols.Count - 2 Step 1
+    if re.Test(me.Symbols(i).Symbol) then 
+        Exit for    
+    End if
+next
+    
+if i < totQty - 2 then
+    me.Text = Right(me.Text, Len(me.Text) - i)
+end if
+
+
+'=================================================
+
+
+Dim vStringToDelete, vFieldName, vFieldVal, i, j
+
+vFieldName = "Descript"
+
+if Len(me.FIELD(vFieldName).Text) < 3 then
+	me.FIELD(vFieldName).Text = "0"
+	Exit Sub
+End if
+
+if Len(me.FIELD("Cost").Text) < 4 and Len(me.FIELD("Price").Text) < 4 and Len(me.FIELD("SumWithTax").Text) < 4 then
+me.FIELD(vFieldName).Text = "0"
+	Exit Sub
+End if
+
+
+vStringToDelete = "/\"
+
+i = me.Symbols.Count - 2
+
+if (i < 4) then
+    Exit Sub
+end if
+
+while i > 1
+
+for j = i to 2 Step -1
+ if me.Symbols(j).Symbol = "^" then 
+  exit for
+ end if
+next
+
+if j > 2 then
+ if instr( 1, vStringToDelete, me.Symbols(j - 1).Symbol ) <> 0 then 
+        me.Symbols(j - 1).Symbol = " "
+ end if
+ if instr( 1, vStringToDelete, me.Symbols(j + 1).Symbol ) <> 0 then 
+        me.Symbols(j + 1).Symbol = " "
+ end if
+
+ if me.Symbols(j - 1).Symbol <> "-" then
+     me.Symbols(j).Symbol = " "
+ else
+    me.Symbols.Delete(j)
+ end if
+end if
+
+i = j - 1
+
+wend
+
+' =========================================================================================
+
+
+Dim totQty, i
+
+totQty = me.Symbols.Count
+
+if totQty > 0 then
+
+ Set re = New RegExp
+ re.Pattern = "[A-ZА-Я0-9]"
+ re.IgnoreCase = True
+ re.Global = True
+    for i = totQty - 1 to 0 Step -1
+     if re.Test(me.Symbols(i).Symbol) and me.Symbols(i).IsSuspicious then 
+       me.CheckSucceeded = false
+       Exit for 
+     End if 
+    next
+
+End if
